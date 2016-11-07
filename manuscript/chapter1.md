@@ -238,3 +238,35 @@ Since `c(y) = c(c(y))`, the confirmation message is idempotent. The recipient ca
 At this point, the two parties have reached an agreement. They both know that the transaction has been sent. However, the recipient doesn't know that agreement has been reached. This is what makes this problem different from the Two Generals Problem. The recipient doesn't need to know.
 
 The processing of transactions was not idempotent. This lead to lost and duplicated transactions. But by separating the transmission of a transaction from its processing, we can impose idempotence where there was none, and fix those problems.
+
+## Technical benefits
+
+Given the requirements of immutability and idempotence, it seems that it would be difficult to construct working systems based upon these restrictions. However, as we have already discovered while exploring accounting records, these restrictions provide many business advantages. These advantages have caused our ancestors to gravitate toward systems of record keeping based on historical documents. The advantages of historical modeling to business visibility cannot be overstated. If these were the only benefits, they would be enough to motivate us to continue building systems this way. However, there are even more gains to be had in the realm of technology.
+
+It is rare for a truly useful piece of software to run on only one computer. Web applications run at least on the user’s computer – in the browser – as well as in the server. More often, the server is not just one machine, but a cluster of web servers, application servers, cache servers, and database servers.
+
+Mobile applications, too, don’t run just on the phone or tablet. They also run partly in the cloud. Messages are pushed out to the machines belonging to network providers, so that push notifications can be sent back down to the device. If the application is collaborative in nature, then it runs not just on one user’s device, but also on those of her collaborators.
+
+When multiple machines work together to run an application, each one will have a different subset of the information at different times. No single machine will ever know the entire state of the system. We therefore cannot program a system based on state if we are to expect to reason about its behavior as a whole. Instead, we must accept the fact that decisions are made elsewhere without our knowledge. Once we learn about those decisions, we must be able to incorporate them into the subset of facts that we know. At that point, we can interpret the new information and arrive at a new consistent view of the world.
+
+That is precisely what Historical Modeling does for us. It gives us a set of rules for capturing decisions where they are made, for moving those decisions where they are needed, and for understanding what they mean once they get there.
+
+### Autonomy
+
+Distributed systems constructed with historical models are made up of nodes that can act autonomously, yet reach consistency. They each express precisely what subset of information they require. When a decision needs to be made, these nodes act upon what they know at that time. They don’t wait for other nodes to give them more information. They don’t block the transaction in order to ask each other questions. They decide, record their decisions as historical facts, and move on. The benefits to performance, scalability, and efficiency are measurable.
+
+The Gift Card system was just one example. The client within the restaurant kept enough information to make decisions autonomously. The server in the datacenter honored that decision, even if it later discovered that the card had insufficient funds. Yes, this introduced risk in the form of unrecoverable balances, but it more than made up for that risk by allowing the system to work while the network was down.
+
+Mobile applications are another example. If they are built using a historical model, they will continue to serve the user even when a network connection is unavailable. They have the subset of information required by that user. There is no need to pause and contact a server to get more. When the user makes a decision, that fact is added to the local subset of information immediately, and has the effect that the user desires. A round trip to the server is not required. As a result, the mobile app is fast and responsive, even if the connection is slow or broken.
+
+Collaborative applications using a historical model will detect and reveal conflicts. They will capture enough information to recognize not only that a conflict has occurred, but also what information was known to each party when they made their conflicting decisions. Based on this information, conflict resolution can either be automated or manual. The conflict and all possible candidate resolutions can be shown to the interested parties so that they can resolve it in their own way. No matter what the strategy, the resolution of the conflict will be recorded as another fact, becoming part of the historical record understood by all parties.
+
+### Git as a historical system
+
+Given these technical benefits, it is not surprising that many systems have already been modeled historically, even if they don’t use that nomenclature. The distributed version control system Git, for example, captures changes to source code as historical facts called “commits”. A commit is a set of changes made to a project by a single developer at a single point in time. Commits are stored in a local repository, so that the server does not need to be consulted for most operations. The developer clones a repository, collecting a subset of commits to work with. The current state of the source code can be constructed from the commits without reconnecting to the remote host.
+
+The developer works disconnected from the server to construct a new set of commits on his own. While he works, he is not connecting to the remote host to lock files or check for the most recent changes. He is working in complete isolation; no round trip to the server is required.
+
+When a conflict occurs, as it must in any distributed system, the developer finds within his local repository all of the information necessary to resolve it. He has the identification of the collaborators (possibly even himself) involved in the conflict. He knows exactly the context of the change – what the code looked like at the time it was modified. And he even has from the commit comments some clue as to the intent of the programmer.
+
+Based on all of this information, the developer can resolve the conflict himself. He doesn’t need to involve the server. In fact, because of the nature of Git branches, he can choose to let the conflict stand as long as he pleases. There is no immediate need to for the conflict to be resolved before work can continue. But when a resolution is made, it is recorded as another commit. That commit becomes part of the history so that all parties involved can see that the conflict has been resolved, and understand the effect of this resolution.
