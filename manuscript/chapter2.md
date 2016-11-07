@@ -12,7 +12,7 @@ Let's go back in time to a world before computers. How was business transacted i
 
 Suppose a customer places an order for ten widgets. This decision is captured as a purchase order. The purchase order references the two parties: the buyer and the seller. It also references the product – widgets – by the catalog number assigned by the seller.
 
-![Purchase Order](chapter2/PurchaseOrder.png)
+![Purchase Order](images/PurchaseOrder.png)
  
 The purchase order is a **fact**. It is a historical document that records a decision. It is immutable: neither party can change the purchase order itself. They can only amend this document with another one.
 
@@ -20,13 +20,13 @@ The purchase order fact refers to a few other facts that came before. It refers 
 
 The purchase order fact also refers to the catalog number. This is a historical fact that the widget was published in a catalog of available products with a listed price. The catalog, once published, is not changed. It is only amended by publishing subsequent catalogs adding and removing products, and changing their prices.
  
-![Purchase Order Fact](chapter2/PurchaseOrderFact.png)
+![Purchase Order Fact](images/PurchaseOrderFact.png)
 
 All of these facts that came before the purchase order – the buyer, the seller, the product – are **predecessors**. A predecessor is a fact that necessarily came before. A fact cannot refer to another fact that came after; that would only be possible if facts could be altered. At the time the fact was created, the successor did not exist.
 
 Let's continue the story of the buyer and the seller. The seller receives a copy of the purchase order, and then sends the buyer an invoice. The invoice is another historical fact. The predecessor of this fact is the purchase order.
 
-![Invoice Fact](chapter2/InvoiceFact.png)
+![Invoice Fact](images/InvoiceFact.png)
 
 The inverse relationship to predecessor is **successor**. The invoice is a successor of the purchase order. Facts don't directly know their successors. They cannot, since they are immutable. But the system can be queried to find the successors of a given fact. This is how a system made up of immutable facts can appear to change. Successors accrue over time, and thereby change the results of a query.
 
